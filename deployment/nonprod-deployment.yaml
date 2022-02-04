@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: a15-non-prod-deployment
+  namespace: stage
+  labels:
+    app: a15
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: a15
+  template:
+    metadata:
+      labels:
+        app: a15
+    spec:
+      containers:
+      - name: a15
+        image: 399752553418.dkr.ecr.us-east-1.amazonaws.com/hello:latest
+        ports:
+        - containerPort: 3000

@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: a15-deployment
-  namespace: stage
+  name: a15-prod-deployment
+  namespace: production
   labels:
     app: a15
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: a15

@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.0
   aws-ecr: circleci/aws-ecr@7.3.0
-  aws-eks: transfix/aws-eks@0.0.1
+  aws-eks: circleci/aws-eks@2.1.1
   kubernetes: circleci/kubernetes@1.3
 jobs:
   test:
@@ -58,11 +58,33 @@ jobs:
               aws eks --region ${AWS_REGION} update-kubeconfig --name demo
           name: Auth
       - kubernetes/create-or-update-resource:
-          resource-file-path: "deployment/deployment.yaml"
+          filters:
+            branches:
+              only:
+                - develop 
+          resource-file-path: "deployment/nonprod-deployment.yaml"
           get-rollout-status: false
           #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
-          resource-file-path: "deployment/svc.yaml"
+          filters:
+            branches:
+              only:
+                - develop 
+          resource-file-path: "deployment/nonprod-svc.yaml"
+      - kubernetes/create-or-update-resource:
+          filters:
+            prs:
+              only:
+                - master
+          resource-file-path: "deployment/prod-deployment.yaml"
+          get-rollout-status: false
+          #resource-name: deployment/a15-deployment
+      - kubernetes/create-or-update-resource:
+          filters:
+            prs:
+              only:
+                - master
+          resource-file-path: "deployment/prod-svc.yaml"
 workflows:
   node-tests:
     jobs:

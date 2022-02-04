@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: a15-non-prod-service
+  namespace: stage
+spec:
+  selector:
+    app: a15
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
