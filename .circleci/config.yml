@@ -33,7 +33,7 @@ jobs:
           destination: raw-test-output
       - store_test_results:
           path: /tmp/test-results
-  run-deployment:
+  test-deployment:
     executor: aws-eks/python3
     parameters:
       cluster-name:
@@ -58,33 +58,11 @@ jobs:
               aws eks --region ${AWS_REGION} update-kubeconfig --name demo
           name: Auth
       - kubernetes/create-or-update-resource:
-          filters:
-            branches:
-              only:
-                - develop 
           resource-file-path: "deployment/nonprod-deployment.yaml"
           get-rollout-status: false
           #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
-          filters:
-            branches:
-              only:
-                - develop 
           resource-file-path: "deployment/nonprod-svc.yaml"
-      - kubernetes/create-or-update-resource:
-          filters:
-            prs:
-              only:
-                - master
-          resource-file-path: "deployment/prod-deployment.yaml"
-          get-rollout-status: false
-          #resource-name: deployment/a15-deployment
-      - kubernetes/create-or-update-resource:
-          filters:
-            prs:
-              only:
-                - master
-          resource-file-path: "deployment/prod-svc.yaml"
 workflows:
   node-tests:
     jobs:
@@ -97,7 +75,11 @@ workflows:
           path: .
           requires:
             - test
-      - run-deployment:
+      - test-deployment:
+          filters:
+            branches:
+             only: 
+               - develop
           cluster-name: demo
           requires:
             - test
