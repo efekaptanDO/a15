@@ -81,6 +81,7 @@ workflows:
             branches:
              only: 
                - develop
+               - master
           cluster-name: demo
           requires:
             - test
