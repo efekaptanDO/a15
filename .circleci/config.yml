@@ -2,37 +2,37 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.0
   aws-ecr: circleci/aws-ecr@7.3.0
-  aws-eks: circleci/aws-eks@2.1.1
+  aws-eks: transfix/aws-eks@0.0.1
   kubernetes: circleci/kubernetes@1.3
 jobs:
   test:
     executor:
       name: node/default
-      tag: '16.10'
+      tag: "16.10"
     steps:
-    - checkout
-    - node/install-packages:
-        pkg-manager: yarn
-    - run:
-        command: yarn lint
-        name: Run Mocha tests
-    - run:
-        command: yarn format:check
-        name: Run Mocha tests
-    - run:
-        command: yarn test
-        name: Run Mocha tests
-    - run:
-        command: yarn test:cov
-        name: Run Mocha tests
-    - run:
-        command: yarn test:e2e
-        name: Run Mocha tests
-    - store_artifacts:
-        path: /tmp/test-results
-        destination: raw-test-output
-    - store_test_results:
-        path: /tmp/test-results
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: yarn lint
+          name: Run Mocha tests
+      - run:
+          command: yarn format:check
+          name: Run Mocha tests
+      - run:
+          command: yarn test
+          name: Run Mocha tests
+      - run:
+          command: yarn test:cov
+          name: Run Mocha tests
+      - run:
+          command: yarn test:e2e
+          name: Run Mocha tests
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+      - store_test_results:
+          path: /tmp/test-results
   run-deployment:
     docker:
       - image: circleci/python:3.7
@@ -57,17 +57,17 @@ jobs:
 workflows:
   node-tests:
     jobs:
-    - test
-    # Envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ECR_ACCOUNT_URL
-    - aws-ecr/build-and-push-image:
-        repo: hello
-        tag: "latest"
-        dockerfile: Dockerfile
-        path: .
-        requires:
-          - test
-    - run-deployment:
-        cluster-name: demo
-        requires:
-          - test
-          - aws-ecr/build-and-push-image
+      - test
+      # Envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ECR_ACCOUNT_URL
+      - aws-ecr/build-and-push-image:
+          repo: hello
+          tag: "latest"
+          dockerfile: Dockerfile
+          path: .
+          requires:
+            - test
+      - run-deployment:
+          cluster-name: demo
+          requires:
+            - test
+            - aws-ecr/build-and-push-image
