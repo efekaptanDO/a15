@@ -59,8 +59,8 @@ jobs:
           name: Auth
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/deployment.yaml"
-          get-rollout-status: true
-          resource-name: deployment/a15-deployment
+          get-rollout-status: false
+          #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/svc.yaml"
 workflows:
