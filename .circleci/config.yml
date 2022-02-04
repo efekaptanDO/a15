@@ -42,11 +42,10 @@ jobs:
         type: string
     steps:
       - checkout
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: demo
-          install-kubectl: true
-          aws-region: us-east-01
-          verbose: true
+      - kubernetes/install
+      - run:
+          command: aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name demo
+          name: auth
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/deployment.yaml"
           get-rollout-status: true
