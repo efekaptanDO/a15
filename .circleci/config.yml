@@ -47,7 +47,6 @@ jobs:
           cluster-name: demo
           install-kubectl: true
           aws-region: us-east-01
-          dry-run: client
           verbose: true
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/deployment.yaml"
