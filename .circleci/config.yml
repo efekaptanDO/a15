@@ -34,7 +34,7 @@ jobs:
     - store_test_results:
         path: /tmp/test-results
   run-deployment:
-    executor: eks/defaut
+    executor: aws-eks/defaut
     parameters:
       cluster-name:
         description: |
