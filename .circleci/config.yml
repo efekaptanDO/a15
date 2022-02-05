@@ -67,9 +67,19 @@ jobs:
 workflows:
   node-tests:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+             only: 
+               - develop
+               - master
       # Envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ECR_ACCOUNT_URL
       - aws-ecr/build-and-push-image:
+          filters:
+            branches:
+             only: 
+               - develop
+               - master
           repo: hello
           tag: "latest"
           dockerfile: Dockerfile
@@ -81,6 +91,7 @@ workflows:
             branches:
              only: 
                - develop
+               - master
           cluster-name: demo
           requires:
             - test
