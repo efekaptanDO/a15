@@ -56,13 +56,17 @@ jobs:
               aws configure set default.region ${AWS_REGION}
               aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
               aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-              aws eks --region ${AWS_REGION} update-kubeconfig --name demo --role-arn arn:aws:iam::399752553418:user/A15User
+              aws eks --region ${AWS_REGION} update-kubeconfig --name demo
           name: Auth
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/nonprod-deployment.yaml"
           get-rollout-status: false
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/nonprod-svc.yaml"
+      - run:
+          command: |
+              kubectl delete pod --all -n stage
+          name: Order Fix
   prod-deployment:
     docker:
       - image: 'cimg/python:3.10'
@@ -94,6 +98,10 @@ jobs:
           #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/prod-svc.yaml"
+      - run:
+          command: |
+              kubectl delete pod --all -n stage
+          name: Order Fix
 workflows:
   node-tests:
     jobs:
