@@ -63,10 +63,8 @@ jobs:
           get-rollout-status: false
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/nonprod-svc.yaml"
-      - run:
-          command: |
-              kubectl delete pod --all -n stage
-          name: Order Fix
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "deployment/aws-auth.yaml"
   prod-deployment:
     docker:
       - image: 'cimg/python:3.10'
@@ -98,10 +96,8 @@ jobs:
           #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/prod-svc.yaml"
-      - run:
-          command: |
-              kubectl delete pod --all -n stage
-          name: Order Fix
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "deployment/aws-auth.yaml"
 workflows:
   node-tests:
     jobs:
