@@ -15,19 +15,19 @@ jobs:
           pkg-manager: yarn
       - run:
           command: yarn lint
-          name: Run Mocha tests
+          name: yarn lint
       - run:
           command: yarn format:check
-          name: Run Mocha tests
+          name: yarn format:check
       - run:
           command: yarn test
-          name: Run Mocha tests
+          name: yarn test
       - run:
           command: yarn test:cov
-          name: Run Mocha tests
+          name: yarn test:cov
       - run:
           command: yarn test:e2e
-          name: Run Mocha tests
+          name: yarn test:e2e
       - store_artifacts:
           path: /tmp/test-results
           destination: raw-test-output
@@ -61,7 +61,6 @@ jobs:
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/nonprod-deployment.yaml"
           get-rollout-status: false
-          #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/nonprod-svc.yaml"
   prod-deployment:
