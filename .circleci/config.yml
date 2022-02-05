@@ -33,7 +33,7 @@ jobs:
           destination: raw-test-output
       - store_test_results:
           path: /tmp/test-results
-  test-deployment:
+  preprod-deployment:
     docker:
       - image: 'cimg/python:3.10'
     parameters:
@@ -64,6 +64,37 @@ jobs:
           #resource-name: deployment/a15-deployment
       - kubernetes/create-or-update-resource:
           resource-file-path: "deployment/nonprod-svc.yaml"
+  prod-deployment:
+    docker:
+      - image: 'cimg/python:3.10'
+    parameters:
+      cluster-name:
+        description: |
+          demo
+        type: string
+    steps:
+      - checkout
+      - kubernetes/install
+      - run:
+          command: |
+              sudo apt-get update -y
+              sudo apt-get install awscli groff -y
+              pip install awscli
+              sudo curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.12/2020-11-02/bin/linux/amd64/kubectl
+              sudo chmod +x ./kubectl
+              mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+              echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+              aws configure set default.region ${AWS_REGION}
+              aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+              aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+              aws eks --region ${AWS_REGION} update-kubeconfig --name demo
+          name: Auth
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "deployment/prod-deployment.yaml"
+          get-rollout-status: false
+          #resource-name: deployment/a15-deployment
+      - kubernetes/create-or-update-resource:
+          resource-file-path: "deployment/prod-svc.yaml"
 workflows:
   node-tests:
     jobs:
@@ -86,11 +117,19 @@ workflows:
           path: .
           requires:
             - test
-      - test-deployment:
+      - preprod-deployment:
           filters:
             branches:
              only: 
                - develop
+          cluster-name: demo
+          requires:
+            - test
+            - aws-ecr/build-and-push-image
+      - prod-deployment:
+          filters:
+            branches:
+             only: 
                - master
           cluster-name: demo
           requires:
